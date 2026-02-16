@@ -29,6 +29,12 @@ if [ -d "$HOME/.video-skill" ]; then
         echo "[Python] Installing mediapipe..."
         "$VENV/bin/pip" install --quiet mediapipe
     fi
+
+    # Check opencv
+    if ! "$VENV/bin/python3" -c "import cv2" 2>/dev/null; then
+        echo "[Python] Installing opencv-python..."
+        "$VENV/bin/pip" install --quiet opencv-python
+    fi
 else
     VENV="$HOME/.shorts-skill"
     if [ -d "$VENV" ]; then
@@ -52,8 +58,8 @@ else
             --index-url https://download.pytorch.org/whl/cpu
     fi
 
-    echo "[Python] Installing faster-whisper, mediapipe, numpy..."
-    "$VENV/bin/pip" install --quiet faster-whisper mediapipe numpy
+    echo "[Python] Installing faster-whisper, mediapipe, numpy, opencv-python..."
+    "$VENV/bin/pip" install --quiet faster-whisper mediapipe numpy opencv-python
 fi
 
 echo "[Python] Venv ready: $VENV"
