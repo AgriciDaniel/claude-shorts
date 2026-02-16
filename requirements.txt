@@ -1,0 +1,4 @@
+faster-whisper>=1.0.0
+mediapipe>=0.10.0
+numpy>=1.24.0
+opencv-python>=4.8.0
