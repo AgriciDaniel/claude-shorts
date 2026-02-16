@@ -1,5 +1,7 @@
 # claude-shorts
 
+![claude-shorts header](claude-shorts-header.jpeg)
+
 Interactive longform-to-shortform video creator powered by [Claude Code](https://docs.anthropic.com/en/docs/claude-code). Extracts viral-ready vertical clips from long videos using Claude as the intelligent orchestrator with Remotion-rendered premium animated captions.
 
 ## How It Works
