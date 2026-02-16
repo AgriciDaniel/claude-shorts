@@ -35,11 +35,11 @@ node remotion/render.mjs             # Headless render (used by pipeline)
 
 ## Temp Files
 
-Pipeline stores intermediate files in `/tmp/claude-shorts/`. This directory is created automatically and cleaned between runs.
+Pipeline stores intermediate files in `$SHORTS_TMP` (defaults to `/tmp/claude-shorts/`). Override with `export SHORTS_TMP="/path/to/dir"` for systems with limited `/tmp` space. The directory is created automatically and cleaned between runs.
 
 ## Dependencies
 
 - FFmpeg (system) — audio extraction, segment cutting, export encoding
-- Python 3.10+ with faster-whisper, mediapipe, numpy
+- Python 3.10+ with faster-whisper, mediapipe, numpy, opencv-python
 - Node.js 18+ with remotion, @remotion/captions, zod
 - NVIDIA GPU recommended (NVENC encoding, CUDA transcription)

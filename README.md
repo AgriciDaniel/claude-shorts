@@ -67,7 +67,7 @@ bash install.sh
 ### What `setup.sh` does
 
 - Creates a Python virtual environment at `~/.shorts-skill/` (or reuses `~/.video-skill/` if it exists)
-- Installs `faster-whisper`, `mediapipe`, `numpy`, and PyTorch (CUDA or CPU variant)
+- Installs `faster-whisper`, `mediapipe`, `numpy`, `opencv-python`, and PyTorch (CUDA or CPU variant)
 - Runs `npm install` in the `remotion/` directory
 - Checks for system dependencies (FFmpeg, jq)
 
