@@ -17,6 +17,10 @@ Claude Code guides you through a 10-step interactive pipeline:
 9. **Render** - Remotion renders 1080x1920 vertical video with animated captions
 10. **Export** - Platform-optimized encoding (YouTube Shorts, TikTok, Instagram Reels)
 
+## Demo
+
+> Demo video/GIF coming soon — showing the full pipeline from input to rendered short with Hormozi-style captions.
+
 ## Features
 
 - **Claude-powered segment scoring** - 5-dimension rubric (hook strength, coherence, emotion, value density, payoff) with weighted scoring. No heuristic keyword matching - Claude understands narrative arcs.
@@ -45,6 +49,18 @@ cd claude-shorts
 bash setup.sh
 
 # Install as a Claude Code skill
+bash install.sh
+```
+
+### Windows
+
+claude-shorts requires Unix tools (FFmpeg, bash). On Windows, use [WSL 2](https://learn.microsoft.com/en-us/windows/wsl/install):
+
+```bash
+# Inside WSL
+git clone https://github.com/AgriciDaniel/claude-shorts.git
+cd claude-shorts
+bash setup.sh
 bash install.sh
 ```
 
@@ -174,6 +190,13 @@ claude-shorts/
 - [React 19](https://react.dev/) - Component framework
 - [Zod](https://zod.dev/) - Runtime type validation for props
 
+### Fonts
+
+Caption fonts are bundled from Google Fonts under the [SIL Open Font License](remotion/public/fonts/OFL.txt):
+- Montserrat Bold (Hormozi style)
+- Bangers Regular (MrBeast style)
+- Inter Bold (Clean style)
+
 ### System
 - [FFmpeg](https://ffmpeg.org/) - Audio extraction, segment cutting, export encoding
 - [jq](https://jqlang.github.io/jq/) - JSON processing in shell scripts
@@ -191,6 +214,11 @@ Claude scores each candidate on 5 weighted dimensions:
 | Payoff Quality | 0.10 | Satisfying conclusion - punchline, reveal, call-to-action |
 
 Final score = weighted sum, scale 0-100. Minimum threshold: 60.
+
+## Support
+
+- **Issues**: [GitHub Issues](https://github.com/AgriciDaniel/claude-shorts/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/AgriciDaniel/claude-shorts/discussions)
 
 ## License
 
