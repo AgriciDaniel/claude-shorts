@@ -41,6 +41,12 @@ if [ -z "$SHORTS_ROOT" ]; then
 fi
 ```
 
+Set up the temp directory (configurable via `SHORTS_TMP` environment variable):
+```bash
+SHORTS_TMP="${SHORTS_TMP:-/tmp/claude-shorts}"
+mkdir -p "$SHORTS_TMP/clips"
+```
+
 ## 10-Step Interactive Pipeline
 
 ### Step 1: PREFLIGHT
@@ -63,11 +69,6 @@ Report to user: input duration, resolution, GPU status, estimated processing tim
 
 ### Step 2: TRANSCRIBE
 
-Create temp directory:
-```bash
-mkdir -p /tmp/claude-shorts/clips
-```
-
 Transcribe with faster-whisper (GPU-accelerated, word-level timestamps).
 Audio extraction is handled internally by transcribe.py:
 ```bash
@@ -76,7 +77,7 @@ VENV="$HOME/.video-skill"
 source "$VENV/bin/activate"
 
 python3 "$SHORTS_ROOT/scripts/transcribe.py" INPUT_FILE \
-    --output /tmp/claude-shorts/transcript.json
+    --output $SHORTS_TMP/transcript.json
 ```
 
 Output is dual-format JSON:
@@ -90,7 +91,7 @@ Report to user: transcription time, word count, language detected.
 Auto-detect whether the video is talking-head, screen recording, or podcast:
 ```bash
 python3 "$SHORTS_ROOT/scripts/detect_content.py" INPUT_FILE \
-    --output /tmp/claude-shorts/content_type.json
+    --output $SHORTS_TMP/content_type.json
 ```
 
 Report detected type to user. Ask if they want to override.
@@ -102,7 +103,7 @@ Report detected type to user. Ask if they want to override.
 
 Read the full transcript directly:
 ```
-Read /tmp/claude-shorts/transcript.json
+Read $SHORTS_TMP/transcript.json
 ```
 
 Also load the scoring rubric:
@@ -154,7 +155,7 @@ After user selects segments:
 
 Write approved segments to:
 ```bash
-cat > /tmp/claude-shorts/approved_segments.json << 'EOF'
+cat > $SHORTS_TMP/approved_segments.json << 'EOF'
 {
   "segments": [
     {
@@ -180,10 +181,10 @@ or mid-sentence:
 
 ```bash
 python3 "$SHORTS_ROOT/scripts/snap_boundaries.py" \
-    --segments /tmp/claude-shorts/approved_segments.json \
-    --transcript /tmp/claude-shorts/transcript.json \
+    --segments $SHORTS_TMP/approved_segments.json \
+    --transcript $SHORTS_TMP/transcript.json \
     --input-video INPUT_FILE \
-    --output /tmp/claude-shorts/snapped_segments.json
+    --output $SHORTS_TMP/snapped_segments.json
 ```
 
 The script:
@@ -203,18 +204,18 @@ From this point forward, use `snapped_segments.json` instead of `approved_segmen
 ### Step 8: PREPARE — Extract Clips + Compute Reframe
 
 Extract each snapped segment via FFmpeg stream copy (near-instant, lossless).
-Use the snapped start/end times from `/tmp/claude-shorts/snapped_segments.json`:
+Use the snapped start/end times from `$SHORTS_TMP/snapped_segments.json`:
 ```bash
 ffmpeg -y -ss START -to END -i INPUT_FILE -c copy \
-    /tmp/claude-shorts/clips/clip_01.mp4
+    $SHORTS_TMP/clips/clip_01.mp4
 ```
 
 Compute reframe coordinates for each clip:
 ```bash
 python3 "$SHORTS_ROOT/scripts/compute_reframe.py" \
-    --clips-dir /tmp/claude-shorts/clips/ \
+    --clips-dir $SHORTS_TMP/clips/ \
     --content-type CONTENT_TYPE \
-    --output /tmp/claude-shorts/reframe.json
+    --output $SHORTS_TMP/reframe.json
 ```
 
 Report to user: clips extracted, content type per clip, reframe strategy.
@@ -224,12 +225,12 @@ Report to user: clips extracted, content type per clip, reframe strategy.
 Render all snapped segments with the selected caption style:
 ```bash
 node "$SHORTS_ROOT/remotion/render.mjs" \
-    --segments /tmp/claude-shorts/snapped_segments.json \
-    --reframe /tmp/claude-shorts/reframe.json \
-    --captions /tmp/claude-shorts/transcript.json \
+    --segments $SHORTS_TMP/snapped_segments.json \
+    --reframe $SHORTS_TMP/reframe.json \
+    --captions $SHORTS_TMP/transcript.json \
     --style STYLE \
-    --clips-dir /tmp/claude-shorts/clips/ \
-    --output-dir /tmp/claude-shorts/render/
+    --clips-dir $SHORTS_TMP/clips/ \
+    --output-dir $SHORTS_TMP/render/
 ```
 
 The render script:
@@ -245,7 +246,7 @@ Report progress to user as each segment renders.
 Export rendered shorts with platform-specific encoding:
 ```bash
 bash "$SHORTS_ROOT/scripts/export.sh" \
-    --input-dir /tmp/claude-shorts/render/ \
+    --input-dir $SHORTS_TMP/render/ \
     --platform PLATFORM \
     --output-dir ./shorts/
 ```
@@ -274,7 +275,7 @@ Present final summary table:
 2. **Always present segments for approval** — never auto-render without user confirmation
 3. **Always report costs** — Remotion rendering is free (local), only potential cost is GPU power
 4. **Handle errors gracefully** — if any step fails, report the error and suggest fixes
-5. **Clean up on success** — offer to delete /tmp/claude-shorts/ after export
+5. **Clean up on success** — offer to delete $SHORTS_TMP/ after export
 6. **Respect the user's choices** — if they say "re-analyze", go back to Step 4
 7. **Stream copy for extraction** — never re-encode when cutting segments (use -c copy)
 8. **One segment at a time** for progress reporting during render
@@ -295,4 +296,4 @@ Load `references/caption-styles.md` for detailed visual specs and spring configs
 - **Transcription fails**: Check venv activation, try `--model small` for less VRAM
 - **Remotion render fails**: Check `cd remotion && npm install`, verify node_modules exists
 - **Export fails**: Check FFmpeg version (`ffmpeg -version`), try CPU encoding if NVENC fails
-- **Out of disk space**: Clean /tmp/claude-shorts/, check with `df -h /tmp`
+- **Out of disk space**: Clean $SHORTS_TMP/, check with `df -h /tmp`
