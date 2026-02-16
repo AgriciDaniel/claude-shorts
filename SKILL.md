@@ -28,9 +28,17 @@ vertical videos with animated captions.
 
 Before starting, locate the project root:
 ```bash
-SHORTS_ROOT="$HOME/Desktop/claude-shorts"
-# Fallback to skill install location
-[ -d "$SHORTS_ROOT" ] || SHORTS_ROOT="$HOME/.claude/skills/claude-shorts"
+# Try common locations in priority order
+SHORTS_ROOT=""
+for dir in "$HOME/.claude/skills/claude-shorts" "$HOME/claude-shorts" "$(pwd)"; do
+    if [ -f "$dir/SKILL.md" ]; then
+        SHORTS_ROOT="$dir"
+        break
+    fi
+done
+if [ -z "$SHORTS_ROOT" ]; then
+    echo "ERROR: claude-shorts project root not found. Please run from the project directory or install with install.sh"
+fi
 ```
 
 ## 10-Step Interactive Pipeline
