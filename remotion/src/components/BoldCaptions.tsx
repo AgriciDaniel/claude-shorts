@@ -1,21 +1,21 @@
 import { useCurrentFrame, useVideoConfig, spring } from "remotion";
 import { useCaptionPages } from "../hooks/useCaptionPages";
-import { HORMOZI_THEME } from "../styles/theme";
+import { BOLD_THEME } from "../styles/theme";
 import type { Caption } from "../types";
 
-interface HormoziCaptionsProps {
+interface BoldCaptionsProps {
   captions: Caption[];
 }
 
 /**
- * Hormozi-style captions: Bold ALL CAPS, pop-in spring animation,
+ * Bold-style captions: ALL CAPS, pop-in spring animation,
  * yellow highlight on the currently active word.
  *
  * Font: Montserrat Bold
  * Words per page: 2-3 (800ms combine window)
  * Animation: Pop-in spring {mass:1, damping:12, stiffness:200}
  */
-export const HormoziCaptions: React.FC<HormoziCaptionsProps> = ({
+export const BoldCaptions: React.FC<BoldCaptionsProps> = ({
   captions,
 }) => {
   const frame = useCurrentFrame();
@@ -71,13 +71,13 @@ export const HormoziCaptions: React.FC<HormoziCaptionsProps> = ({
               fontSize: 72,
               textTransform: "uppercase",
               color: isActive
-                ? HORMOZI_THEME.activeColor
-                : HORMOZI_THEME.textColor,
+                ? BOLD_THEME.activeColor
+                : BOLD_THEME.textColor,
               textShadow: `
-                3px 3px 0 ${HORMOZI_THEME.shadowColor},
-                -3px -3px 0 ${HORMOZI_THEME.shadowColor},
-                3px -3px 0 ${HORMOZI_THEME.shadowColor},
-                -3px 3px 0 ${HORMOZI_THEME.shadowColor}
+                3px 3px 0 ${BOLD_THEME.shadowColor},
+                -3px -3px 0 ${BOLD_THEME.shadowColor},
+                3px -3px 0 ${BOLD_THEME.shadowColor},
+                -3px 3px 0 ${BOLD_THEME.shadowColor}
               `,
               lineHeight: 1.1,
               textAlign: "center",

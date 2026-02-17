@@ -21,12 +21,12 @@ Claude Code guides you through a 10-step interactive pipeline:
 
 ## Demo
 
-> Demo video/GIF coming soon — showing the full pipeline from input to rendered short with Hormozi-style captions.
+> Demo video/GIF coming soon — showing the full pipeline from input to rendered short with Bold-style captions.
 
 ## Features
 
 - **Claude-powered segment scoring** - 5-dimension rubric (hook strength, coherence, emotion, value density, payoff) with weighted scoring. No heuristic keyword matching - Claude understands narrative arcs.
-- **3 caption styles** - Hormozi (bold ALL CAPS, yellow highlights), MrBeast (bouncy spring, rotating colors), Clean (minimal fade-in)
+- **3 caption styles** - Bold (ALL CAPS, yellow highlights), Bounce (bouncy spring, rotating colors), Clean (minimal fade-in)
 - **Cursor tracking** - For screen recordings, detects mouse cursor via frame differencing and smoothly pans the crop to follow it
 - **Audio-aware boundary snapping** - Never cuts mid-word or mid-sentence. Extends to natural sentence endings and silence points.
 - **Remotion rendering** - React-based single-pass rendering with spring animations, word-level karaoke highlighting, hook text overlays, and progress bars
@@ -101,7 +101,7 @@ Claude: [Transcribes, detects content type, scores segments]
 | 3 | 08:11 - 08:52 | 41s  | 79    | "I tested this for 6 months." |
 
 Claude: Which segments? Caption style? Platform?
-You: 1 and 3, mrbeast style, youtube
+You: 1 and 3, bounce style, youtube
 
 Claude: [Snaps boundaries, extracts clips, renders, exports]
 Output: shorts/short_01_yt.mp4, shorts/short_03_yt.mp4
@@ -136,8 +136,8 @@ claude-shorts/
 │       ├── components/
 │       │   ├── VideoFrame.tsx         # Reframed video with animated crop pan
 │       │   ├── Captions.tsx           # Style dispatcher
-│       │   ├── HormoziCaptions.tsx    # Bold ALL CAPS, pop-in spring
-│       │   ├── MrBeastCaptions.tsx    # Bouncy scale, bright colors
+│       │   ├── BoldCaptions.tsx        # Bold ALL CAPS, pop-in spring
+│       │   ├── BounceCaptions.tsx     # Bouncy scale, bright colors
 │       │   ├── CleanCaptions.tsx      # Minimal fade-in
 │       │   ├── HookOverlay.tsx        # First 3.5s hook text
 │       │   └── ProgressBar.tsx        # Bottom progress indicator
@@ -158,8 +158,8 @@ claude-shorts/
 
 | Style | Font | Animation | Best For |
 |-------|------|-----------|----------|
-| **Hormozi** | Montserrat Bold | Pop-in spring, yellow active word | Business, education |
-| **MrBeast** | Bangers | Bouncy scale 70-120-100%, rotating colors | Entertainment, energy |
+| **Bold** | Montserrat Bold | Pop-in spring, yellow active word | Business, education |
+| **Bounce** | Bangers | Bouncy scale 70-120-100%, rotating colors | Entertainment, energy |
 | **Clean** | Inter Bold | Fade-in opacity, white + shadow | Professional, interviews |
 
 ## Platform Export Specs
@@ -195,8 +195,8 @@ claude-shorts/
 ### Fonts
 
 Caption fonts are bundled from Google Fonts under the [SIL Open Font License](remotion/public/fonts/OFL.txt):
-- Montserrat Bold (Hormozi style)
-- Bangers Regular (MrBeast style)
+- Montserrat Bold (Bold style)
+- Bangers Regular (Bounce style)
 - Inter Bold (Clean style)
 
 ### System

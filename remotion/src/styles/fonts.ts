@@ -4,8 +4,8 @@ import { staticFile } from "remotion";
  * Font declarations for caption styles.
  *
  * Fonts are loaded from public/fonts/ directory:
- * - Montserrat Bold (Hormozi style) — Google Fonts, OFL
- * - Bangers (MrBeast style) — Google Fonts, OFL
+ * - Montserrat Bold (Bold style) — Google Fonts, OFL
+ * - Bangers (Bounce style) — Google Fonts, OFL
  * - Inter Bold (Clean style) — Google Fonts, OFL
  *
  * For preview mode, fonts are loaded via @font-face in the browser.

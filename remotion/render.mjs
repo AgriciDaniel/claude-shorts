@@ -10,7 +10,7 @@
  *     --segments /tmp/claude-shorts/approved_segments.json \
  *     --reframe /tmp/claude-shorts/reframe.json \
  *     --captions /tmp/claude-shorts/transcript.json \
- *     --style hormozi \
+ *     --style bold \
  *     --clips-dir /tmp/claude-shorts/clips/ \
  *     --output-dir /tmp/claude-shorts/render/
  *
@@ -42,14 +42,14 @@ async function main() {
   const segmentsPath = args.segments;
   const reframePath = args.reframe;
   const captionsPath = args.captions;
-  const style = args.style || "hormozi";
+  const style = args.style || "bold";
   const clipsDir = args["clips-dir"];
   const outputDir = args["output-dir"] || "/tmp/claude-shorts/render/";
 
   if (!segmentsPath || !reframePath || !captionsPath || !clipsDir) {
     console.error(JSON.stringify({
       error: "Missing required arguments",
-      usage: "node render.mjs --segments FILE --reframe FILE --captions FILE --clips-dir DIR [--style hormozi|mrbeast|clean] [--output-dir DIR]",
+      usage: "node render.mjs --segments FILE --reframe FILE --captions FILE --clips-dir DIR [--style bold|bounce|clean] [--output-dir DIR]",
     }));
     process.exit(1);
   }

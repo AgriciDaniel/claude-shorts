@@ -71,11 +71,11 @@ This avoids double-encoding. Remotion handles the crop during render.
 Spring configs for each caption style:
 
 ```ts
-// Hormozi: Snappy pop-in, slight overshoot
+// Bold: Snappy pop-in, slight overshoot
 spring({ frame, fps, config: { mass: 1, damping: 12, stiffness: 200 } });
 // ~0.4s settle, overshoots to ~1.05
 
-// MrBeast: Very bouncy, visible overshoot
+// Bounce: Very bouncy, visible overshoot
 spring({ frame, fps, config: { mass: 1, damping: 8, stiffness: 180 } });
 // ~0.6s settle, overshoots to ~1.2
 
@@ -159,7 +159,7 @@ const ShortVideoPropsSchema = z.object({
   sourceHeight: z.number(),
   crop: CropSchema,
   captions: z.array(CaptionSchema),
-  captionStyle: z.enum(["hormozi", "mrbeast", "clean"]),
+  captionStyle: z.enum(["bold", "bounce", "clean"]),
   hookLine1: z.string().optional().default(""),
   hookLine2: z.string().optional().default(""),
   showProgressBar: z.boolean().optional().default(true),

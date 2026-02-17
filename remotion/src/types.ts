@@ -24,7 +24,7 @@ export const CropKeyframeSchema = z.object({
 
 export type CropKeyframe = z.infer<typeof CropKeyframeSchema>;
 
-export const CaptionStyle = z.enum(["hormozi", "mrbeast", "clean"]);
+export const CaptionStyle = z.enum(["bold", "bounce", "clean"]);
 export type CaptionStyleType = z.infer<typeof CaptionStyle>;
 
 export const ShortVideoPropsSchema = z.object({

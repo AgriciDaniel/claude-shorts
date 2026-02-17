@@ -4,7 +4,7 @@ description: >
   Interactive longform-to-shortform video creator. Extracts viral-ready short clips
   from long videos using Claude as the orchestrator. Transcribes with faster-whisper
   (GPU), Claude scores and presents candidate segments interactively, user picks and
-  adjusts, Remotion renders premium animated captions (Hormozi/MrBeast/Clean styles),
+  adjusts, Remotion renders premium animated captions (Bold/Bounce/Clean styles),
   FFmpeg exports platform-optimized files (YouTube Shorts, TikTok, Instagram Reels).
   Use when user says "shorts", "short clips", "shortform", "extract clips",
   "tiktok from video", "reels from video", "vertical clips", or "create shorts".
@@ -153,7 +153,7 @@ Present candidates in a formatted table:
 
 Then ask the user using AskUserQuestion:
 1. **Which segments?** — "all", specific numbers, or "none, re-analyze"
-2. **Caption style?** — hormozi (bold ALL CAPS), mrbeast (bouncy colorful), clean (minimal fade)
+2. **Caption style?** — bold (ALL CAPS pop-in), bounce (bouncy colorful), clean (minimal fade)
 3. **Platform?** — youtube, tiktok, instagram, or all
 
 ### Step 6: APPROVE — Interactive Adjustment Loop
@@ -178,7 +178,7 @@ cat > $SHORTS_TMP/approved_segments.json << 'EOF'
       "score": 87
     }
   ],
-  "style": "hormozi",
+  "style": "bold",
   "platform": "all",
   "content_type": "talking-head"
 }
@@ -306,8 +306,8 @@ or re-exported before delivery.
 
 | Style | Font | Look | Best for |
 |-------|------|------|----------|
-| **hormozi** | Montserrat Bold | ALL CAPS, pop-in, yellow active word | Business, education, motivation |
-| **mrbeast** | Bangers | Bouncy scale, rotating bright colors | Entertainment, reactions, energy |
+| **bold** | Montserrat Bold | ALL CAPS, pop-in, yellow active word | Business, education, motivation |
+| **bounce** | Bangers | Bouncy scale, rotating bright colors | Entertainment, reactions, energy |
 | **clean** | Inter Bold | Minimal fade-in, white + shadow | Professional, calm, interviews |
 
 Load `references/caption-styles.md` for detailed visual specs and spring configs.

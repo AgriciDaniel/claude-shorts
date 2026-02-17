@@ -1,21 +1,21 @@
 import { useCurrentFrame, useVideoConfig, spring } from "remotion";
 import { useCaptionPages } from "../hooks/useCaptionPages";
-import { MRBEAST_THEME } from "../styles/theme";
+import { BOUNCE_THEME } from "../styles/theme";
 import type { Caption } from "../types";
 
-interface MrBeastCaptionsProps {
+interface BounceCaptionsProps {
   captions: Caption[];
 }
 
 /**
- * MrBeast-style captions: Bouncy scale spring, rotating bright colors,
+ * Bounce-style captions: Bouncy scale spring, rotating bright colors,
  * 1-2 words per page for maximum impact.
  *
  * Font: Bangers (Google Fonts, OFL)
  * Words per page: 1-2 (600ms combine window)
  * Animation: Scale spring 70% → 120% → 100% {mass:1, damping:8}
  */
-export const MrBeastCaptions: React.FC<MrBeastCaptionsProps> = ({
+export const BounceCaptions: React.FC<BounceCaptionsProps> = ({
   captions,
 }) => {
   const frame = useCurrentFrame();
@@ -45,7 +45,7 @@ export const MrBeastCaptions: React.FC<MrBeastCaptionsProps> = ({
   const scale = 0.7 + rawScale * 0.3;
 
   // Rotating color per page
-  const color = MRBEAST_THEME.rotatingColors[pageIndex % MRBEAST_THEME.rotatingColors.length];
+  const color = BOUNCE_THEME.rotatingColors[pageIndex % BOUNCE_THEME.rotatingColors.length];
 
   return (
     <div
@@ -66,10 +66,10 @@ export const MrBeastCaptions: React.FC<MrBeastCaptionsProps> = ({
           fontSize: 84,
           color,
           textShadow: `
-            4px 4px 0 ${MRBEAST_THEME.shadowColor},
-            -4px -4px 0 ${MRBEAST_THEME.shadowColor},
-            4px -4px 0 ${MRBEAST_THEME.shadowColor},
-            -4px 4px 0 ${MRBEAST_THEME.shadowColor}
+            4px 4px 0 ${BOUNCE_THEME.shadowColor},
+            -4px -4px 0 ${BOUNCE_THEME.shadowColor},
+            4px -4px 0 ${BOUNCE_THEME.shadowColor},
+            -4px 4px 0 ${BOUNCE_THEME.shadowColor}
           `,
           textAlign: "center",
           lineHeight: 1.0,

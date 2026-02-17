@@ -2,7 +2,7 @@
 
 Three premium caption presets for different content tones. Each uses `@remotion/captions` createTikTokStyleCaptions() for word-level timing.
 
-## Hormozi Style
+## Bold Style
 
 Best for: Business, education, motivation, "guru" content.
 
@@ -20,14 +20,14 @@ Best for: Business, education, motivation, "guru" content.
 | Animation | Pop-in spring: {mass:1, damping:12, stiffness:200} |
 | Timing | Page appears at first word, disappears after last word |
 
-**Visual reference**: Alex Hormozi's YouTube Shorts — all caps, word-by-word yellow highlight, bold pop-in entrance.
+**Visual reference**: All caps, word-by-word yellow highlight, bold pop-in entrance.
 
 **Spring config explained**:
 - `damping: 12` — moderate bounce, settles in ~0.4s
 - `stiffness: 200` — snappy entrance
 - Scale goes from 0 → slight overshoot (~1.05) → 1.0
 
-## MrBeast Style
+## Bounce Style
 
 Best for: Entertainment, reactions, challenges, high-energy content.
 
