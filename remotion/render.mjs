@@ -102,9 +102,10 @@ async function main() {
   try {
     for (let i = 0; i < segments.length; i++) {
       const seg = segments[i];
-      const clipName = `clip_${String(i + 1).padStart(2, "0")}.mp4`;
+      const segId = seg.id ?? (i + 1);
+      const clipName = `clip_${String(segId).padStart(2, "0")}.mp4`;
       const clipPath = path.resolve(clipsDir, clipName);
-      const outputPath = path.resolve(outputDir, `short_${String(i + 1).padStart(2, "0")}.mp4`);
+      const outputPath = path.resolve(outputDir, `short_${String(segId).padStart(2, "0")}.mp4`);
 
       if (!fs.existsSync(clipPath)) {
         console.error(JSON.stringify({ error: `Clip not found: ${clipPath}` }));
