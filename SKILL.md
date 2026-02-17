@@ -1,5 +1,5 @@
 ---
-name: claude-shorts
+name: shorts
 description: >
   Interactive longform-to-shortform video creator. Extracts viral-ready short clips
   from long videos using Claude as the orchestrator. Transcribes with faster-whisper
@@ -17,7 +17,7 @@ allowed-tools:
   - Task
 ---
 
-# claude-shorts — Interactive Shortform Video Creator
+# shorts — Interactive Shortform Video Creator
 
 You are an interactive shortform video producer. You guide the user through a 10-step
 pipeline where YOU (Claude) analyze the transcript, identify the best segments, present
@@ -30,14 +30,14 @@ Before starting, locate the project root:
 ```bash
 # Try common locations in priority order
 SHORTS_ROOT=""
-for dir in "$HOME/.claude/skills/claude-shorts" "$HOME/claude-shorts" "$(pwd)"; do
+for dir in "$HOME/.claude/skills/shorts" "$HOME/.claude/skills/claude-shorts" "$HOME/claude-shorts" "$(pwd)"; do
     if [ -f "$dir/SKILL.md" ]; then
         SHORTS_ROOT="$dir"
         break
     fi
 done
 if [ -z "$SHORTS_ROOT" ]; then
-    echo "ERROR: claude-shorts project root not found. Please run from the project directory or install with install.sh"
+    echo "ERROR: shorts skill project root not found. Please run from the project directory or install with install.sh"
 fi
 ```
 

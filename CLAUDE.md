@@ -13,7 +13,7 @@ Standalone interactive shortform video creator. Extracts viral-ready short clips
 
 ```bash
 bash setup.sh          # Install Python + Node dependencies (one-time)
-bash install.sh        # Copy skill to ~/.claude/skills/claude-shorts/
+bash install.sh        # Copy skill to ~/.claude/skills/shorts/
 ```
 
 ## Python Virtual Environment

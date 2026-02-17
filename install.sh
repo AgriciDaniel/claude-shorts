@@ -3,9 +3,9 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SKILL_DIR="$HOME/.claude/skills/claude-shorts"
+SKILL_DIR="$HOME/.claude/skills/shorts"
 
-echo "=== Installing claude-shorts skill ==="
+echo "=== Installing shorts skill ==="
 
 # Create skill directory
 mkdir -p "$SKILL_DIR"
