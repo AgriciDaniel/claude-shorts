@@ -46,6 +46,7 @@ encode_youtube() {
             -c:v h264_nvenc -preset p5 -tune hq \
             -b:v 12M -maxrate 14M -bufsize 24M \
             -profile:v high -level 4.2 \
+            -af loudnorm=I=-14:TP=-1:LRA=11 \
             -c:a aac -b:a 192k -ar 48000 \
             -pix_fmt yuv420p -movflags +faststart \
             "$output" 2>/dev/null
@@ -54,6 +55,7 @@ encode_youtube() {
             -c:v libx264 -preset slow \
             -b:v 12M -maxrate 14M -bufsize 24M \
             -profile:v high -level 4.2 \
+            -af loudnorm=I=-14:TP=-1:LRA=11 \
             -c:a aac -b:a 192k -ar 48000 \
             -pix_fmt yuv420p -movflags +faststart \
             "$output" 2>/dev/null
@@ -66,6 +68,7 @@ encode_tiktok() {
         ffmpeg -y -i "$input" \
             -c:v h264_nvenc -preset p5 -tune hq \
             -cq 18 -maxrate 10M -bufsize 20M \
+            -af loudnorm=I=-14:TP=-1:LRA=11 \
             -c:a aac -b:a 128k -ar 44100 \
             -pix_fmt yuv420p -movflags +faststart \
             "$output" 2>/dev/null
@@ -73,6 +76,7 @@ encode_tiktok() {
         ffmpeg -y -i "$input" \
             -c:v libx264 -preset slow -crf 18 \
             -maxrate 10M -bufsize 20M \
+            -af loudnorm=I=-14:TP=-1:LRA=11 \
             -c:a aac -b:a 128k -ar 44100 \
             -pix_fmt yuv420p -movflags +faststart \
             "$output" 2>/dev/null
@@ -86,6 +90,7 @@ encode_instagram() {
             -c:v h264_nvenc -preset p5 -tune hq \
             -b:v 4500k -maxrate 5000k -bufsize 10M \
             -profile:v high -level 4.2 \
+            -af loudnorm=I=-14:TP=-1:LRA=11 \
             -c:a aac -b:a 128k -ar 44100 \
             -pix_fmt yuv420p -movflags +faststart \
             "$output" 2>/dev/null
@@ -94,6 +99,7 @@ encode_instagram() {
             -c:v libx264 -preset slow \
             -b:v 4500k -maxrate 5000k -bufsize 10M \
             -profile:v high -level 4.2 \
+            -af loudnorm=I=-14:TP=-1:LRA=11 \
             -c:a aac -b:a 128k -ar 44100 \
             -pix_fmt yuv420p -movflags +faststart \
             "$output" 2>/dev/null

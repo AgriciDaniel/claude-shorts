@@ -128,6 +128,17 @@ For each candidate, identify:
 - A suggested hook line (first 3 seconds of text overlay)
 - Brief rationale (1 sentence explaining why this segment works)
 
+**Transcript cleanup:** While analyzing, also produce cleaned captions for rendering.
+Read the `captions[]` array from transcript.json, then:
+1. Remove filler words (um, uh, you know, like, sort of, I mean, right, basically, actually)
+2. Fix obvious transcription errors based on surrounding context
+3. Consolidate incomplete sentence fragments where appropriate
+4. **Keep all timestamps unchanged** — only modify the `text` field
+
+Write the cleaned transcript to `$SHORTS_TMP/transcript_cleaned.json` using the same
+JSON structure as transcript.json (both `segments` and `captions` arrays). The `captions`
+array should contain the cleaned text; copy `segments` as-is.
+
 ### Step 5: PRESENT — Show Candidates Interactively
 
 Present candidates in a formatted table:
@@ -227,7 +238,7 @@ Render all snapped segments with the selected caption style:
 node "$SHORTS_ROOT/remotion/render.mjs" \
     --segments $SHORTS_TMP/snapped_segments.json \
     --reframe $SHORTS_TMP/reframe.json \
-    --captions $SHORTS_TMP/transcript.json \
+    --captions $SHORTS_TMP/transcript_cleaned.json \
     --style STYLE \
     --clips-dir $SHORTS_TMP/clips/ \
     --output-dir $SHORTS_TMP/render/
@@ -269,6 +280,16 @@ Present final summary table:
 | 1 | shorts/short_01_ig.mp4    | Instagram | 39s      | 7.1MB  |
 ```
 
+**Post-export validation:** Run validation on all exported files:
+```bash
+bash "$SHORTS_ROOT/scripts/validate.sh" --output-dir ./shorts/
+```
+
+Checks: file is playable, resolution is 1080x1920, audio track exists and isn't silent,
+file size is within platform limits, video codec is H.264, duration is 3-90 seconds.
+If any file fails, report the issues to the user. Failed files should be re-rendered
+or re-exported before delivery.
+
 ## Important Rules
 
 1. **Always run preflight** before any processing
@@ -290,6 +311,21 @@ Present final summary table:
 | **clean** | Inter Bold | Minimal fade-in, white + shadow | Professional, calm, interviews |
 
 Load `references/caption-styles.md` for detailed visual specs and spring configs.
+
+## Configurable Parameters
+
+These defaults work well for most content. Offer alternatives when the user has specific needs.
+
+| Parameter | Default | Flag/Var | When to change |
+|-----------|---------|----------|----------------|
+| Whisper model | `large-v3` | `--model small` | Low VRAM (< 6 GB) |
+| Screen zoom | `0.55` | `--zoom 0.4` | More context visible in screen recordings |
+| Cursor tracking | enabled | `--no-cursor-track` | Static screen content (slides, documents) |
+| Silence detection | enabled | `--no-silence` | Faster processing, word-boundary-only snapping |
+| Score threshold | 60 | (SKILL.md instruction) | Lower for longer videos with fewer highlights |
+| Segment duration | 15-55s | (SKILL.md instruction) | Adjust per platform (TikTok prefers 21-34s) |
+| Temp directory | `/tmp/claude-shorts/` | `SHORTS_TMP` env var | Systems with limited /tmp space |
+| Export platform | `all` | `--platform youtube` | Single-platform targeting |
 
 ## Error Recovery
 

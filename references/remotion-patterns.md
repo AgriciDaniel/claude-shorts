@@ -169,7 +169,7 @@ const ShortVideoPropsSchema = z.object({
 
 ## File Paths in Render
 
-When rendering headless, `clipSrc` must be a `file://` URL (e.g., `file:///tmp/claude-shorts/clips/clip_01.mp4`). OffthreadVideo runs inside headless Chrome which requires the `file://` protocol for local filesystem access. Do NOT use `staticFile()` for dynamic clip sources — that's for bundled assets only.
+When rendering headless, `clipSrc` must be an `http://` URL. Remotion's renderer proxy does not support `file://` URLs. The render script starts a local HTTP server on a random port (e.g., `http://127.0.0.1:PORT/clip_01.mp4`) to serve clip files. Do NOT use `staticFile()` for dynamic clip sources — that's for bundled assets only.
 
 ## Performance Tips
 

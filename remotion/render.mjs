@@ -162,41 +162,76 @@ async function main() {
         status: "starting",
       }));
 
-      const startRender = Date.now();
+      // Retry once on failure before skipping this segment
+      let rendered = false;
+      const maxAttempts = 2;
+      for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+        try {
+          const startRender = Date.now();
 
-      // selectComposition resolves calculateMetadata for dynamic duration
-      const composition = await selectComposition({
-        serveUrl,
-        id: "ShortVideo",
-        inputProps,
-        puppeteerInstance: browser,
-      });
+          // selectComposition resolves calculateMetadata for dynamic duration
+          const composition = await selectComposition({
+            serveUrl,
+            id: "ShortVideo",
+            inputProps,
+            puppeteerInstance: browser,
+          });
 
-      await renderMedia({
-        composition,
-        serveUrl,
-        codec: "h264",
-        crf: 18,
-        outputLocation: outputPath,
-        inputProps,
-        puppeteerInstance: browser,
-      });
+          await renderMedia({
+            composition,
+            serveUrl,
+            codec: "h264",
+            crf: 18,
+            outputLocation: outputPath,
+            inputProps,
+            puppeteerInstance: browser,
+          });
 
-      const renderTime = ((Date.now() - startRender) / 1000).toFixed(1);
-      const fileSizeMB = (fs.statSync(outputPath).size / 1024 / 1024).toFixed(1);
+          const renderTime = ((Date.now() - startRender) / 1000).toFixed(1);
+          const fileSizeMB = (fs.statSync(outputPath).size / 1024 / 1024).toFixed(1);
 
-      const result = {
-        action: "render",
-        segment: i + 1,
-        output: outputPath,
-        duration: `${durationInSeconds.toFixed(1)}s`,
-        render_time_sec: renderTime,
-        file_size_mb: fileSizeMB,
-        status: "complete",
-      };
+          const result = {
+            action: "render",
+            segment: i + 1,
+            output: outputPath,
+            duration: `${durationInSeconds.toFixed(1)}s`,
+            render_time_sec: renderTime,
+            file_size_mb: fileSizeMB,
+            status: "complete",
+          };
 
-      results.push(result);
-      console.log(JSON.stringify(result));
+          results.push(result);
+          console.log(JSON.stringify(result));
+          rendered = true;
+          break;
+        } catch (renderErr) {
+          if (attempt < maxAttempts) {
+            console.log(JSON.stringify({
+              action: "render",
+              segment: i + 1,
+              status: "retrying",
+              attempt,
+              error: renderErr.message,
+            }));
+          } else {
+            console.error(JSON.stringify({
+              action: "render",
+              segment: i + 1,
+              status: "failed",
+              error: renderErr.message,
+            }));
+          }
+        }
+      }
+
+      if (!rendered) {
+        results.push({
+          action: "render",
+          segment: i + 1,
+          output: outputPath,
+          status: "failed",
+        });
+      }
     }
   } finally {
     await browser.close({ silent: true });

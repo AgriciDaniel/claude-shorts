@@ -16,9 +16,9 @@ Output:
 }
 
 Classification rules:
-- talking-head: 1 face, large (>8% frame area), centered
+- talking-head: 1 face, large (>=5% frame area), centered (center_bias >= 0.4)
 - podcast: 2+ faces consistently, medium size (5-15%)
-- screen: <0.5 avg faces OR very small faces (<5%) — code, slides, browser
+- screen: <0.5 avg faces, very small faces (<5%), or small off-center faces (PiP/presenter overlay)
 """
 import argparse
 import json
@@ -104,6 +104,8 @@ def detect_faces(frame_paths):
 
     avg_count = float(np.mean(face_counts)) if face_counts else 0
     avg_size = float(np.mean(face_sizes)) if face_sizes else 0
+    size_std = float(np.std(face_sizes)) if len(face_sizes) > 1 else 0
+    max_size = float(np.max(face_sizes)) if face_sizes else 0
     center_bias = 0.0
     if face_centers_x:
         # How close to center (0.5)? 1.0 = perfectly centered
@@ -112,6 +114,8 @@ def detect_faces(frame_paths):
     return {
         "avg_count": round(avg_count, 2),
         "avg_size_pct": round(avg_size, 2),
+        "max_size_pct": round(max_size, 2),
+        "size_std": round(size_std, 2),
         "center_bias": round(center_bias, 3),
         "frames_with_faces": sum(1 for c in face_counts if c > 0),
         "total_frames": len(face_counts),
@@ -134,6 +138,13 @@ def classify(face_stats):
     if avg_count >= 1.8 and face_ratio > 0.7:
         confidence = min(1.0, (avg_count - 1.0) * 0.3 + face_ratio * 0.3 + 0.4)
         return "podcast", round(confidence, 3)
+
+    # PiP / off-center face: small-to-medium face that's far from center
+    # (e.g., webcam overlay in corner, presenter in slide corner)
+    # Face-tracking would zoom into the small face and lose the main content
+    if avg_size < 8 and center_bias < 0.4:
+        confidence = min(1.0, (1.0 - center_bias) * 0.3 + (8 - avg_size) / 8 * 0.3 + 0.3)
+        return "screen", round(confidence, 3)
 
     # Talking head: single face, large, centered
     if avg_count >= 0.5 and avg_size >= 5:

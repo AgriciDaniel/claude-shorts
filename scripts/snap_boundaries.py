@@ -144,7 +144,7 @@ def snap_end(words, proposed_end, search_window=3.0, pad_ms=300):
     # Find the last word that ends at or before proposed_end
     last_word_idx = None
     for i, w in enumerate(words):
-        if w["end"] <= proposed_end + 0.5:  # small tolerance
+        if w["end"] <= proposed_end + 0.2:  # small tolerance for timestamp imprecision
             last_word_idx = i
 
     if last_word_idx is None:

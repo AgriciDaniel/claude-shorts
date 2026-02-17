@@ -123,36 +123,35 @@ def detect_cursor_positions(clip_path, src_w, src_h, sample_interval=0.5):
 
     _, _, _, duration = get_video_info(clip_path)
 
-    # Sample timestamps every sample_interval seconds
-    timestamps = []
-    t = 0.0
-    while t < duration:
-        timestamps.append(t)
-        t += sample_interval
-
-    if len(timestamps) < 2:
+    if duration < sample_interval * 2:
         return []
 
     tmpdir = tempfile.mkdtemp()
 
-    # Extract all sample frames
-    frames = []
-    for i, ts in enumerate(timestamps):
-        frame_path = os.path.join(tmpdir, f"f_{i:04d}.jpg")
-        subprocess.run(
-            ["ffmpeg", "-y", "-ss", str(ts), "-i", clip_path,
-             "-vframes", "1", "-q:v", "2", frame_path],
-            capture_output=True
-        )
-        if os.path.exists(frame_path):
-            img = cv2.imread(frame_path, cv2.IMREAD_GRAYSCALE)
-            frames.append((ts, img))
-            os.unlink(frame_path)
-        else:
-            frames.append((ts, None))
+    # Extract all sample frames in a single FFmpeg call (much faster than per-frame seeks)
+    fps_rate = 1.0 / sample_interval
+    subprocess.run(
+        ["ffmpeg", "-y", "-i", clip_path,
+         "-vf", f"fps={fps_rate}", "-q:v", "2",
+         os.path.join(tmpdir, "f_%04d.jpg")],
+        capture_output=True
+    )
 
+    # Read extracted frames in order (FFmpeg numbers from 0001)
     import shutil
+    frame_files = sorted(glob.glob(os.path.join(tmpdir, "f_*.jpg")))
+    frames = []
+    for i, frame_path in enumerate(frame_files):
+        ts = i * sample_interval
+        if ts >= duration:
+            break
+        img = cv2.imread(frame_path, cv2.IMREAD_GRAYSCALE)
+        frames.append((ts, img))
+
     shutil.rmtree(tmpdir, ignore_errors=True)
+
+    if len(frames) < 2:
+        return []
 
     cursor_positions = []
     last_known_x = 0.5  # default to center
