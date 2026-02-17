@@ -6,12 +6,14 @@ set -euo pipefail
 INPUT_DIR=""
 PLATFORM="all"
 OUTPUT_DIR="./shorts"
+FORCE="false"
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --input-dir) INPUT_DIR="$2"; shift 2 ;;
         --platform) PLATFORM="$2"; shift 2 ;;
         --output-dir) OUTPUT_DIR="$2"; shift 2 ;;
+        --force) FORCE="true"; shift ;;
         *) echo "Unknown option: $1" >&2; exit 1 ;;
     esac
 done
@@ -125,6 +127,17 @@ for input_file in "$INPUT_DIR"/short_*.mp4; do
         esac
 
         output_file="$OUTPUT_DIR/short_${num}${suffix}.mp4"
+
+        # Skip if output already exists (use --force to overwrite)
+        if [ -f "$output_file" ] && [ "$FORCE" != "true" ]; then
+            size=$(du -k "$output_file" | cut -f1)
+            size_mb=$(echo "scale=1; $size / 1024" | bc)
+            duration=$(ffprobe -v quiet -show_entries format=duration -of csv=p=0 "$output_file" 2>/dev/null)
+            duration_int=$(printf "%.0f" "$duration" 2>/dev/null || echo "0")
+            RESULTS+=("{\"file\":\"$output_file\",\"platform\":\"$plat\",\"duration\":\"${duration_int}s\",\"size_mb\":$size_mb,\"skipped\":true}")
+            continue
+        fi
+
         $encode_func "$input_file" "$output_file"
 
         # Get file info
