@@ -141,7 +141,7 @@ All exports normalize audio to -14 LUFS (EBU R128) using FFmpeg's `loudnorm` fil
 
 ## NVENC Encoding Notes
 
-For RTX GPUs (this system: RTX 5070 Ti):
+For NVIDIA GPUs with NVENC support (GTX 1650+, RTX series):
 - `h264_nvenc -preset p5 -tune hq` provides best quality
 - 5-10x faster than CPU `-preset slow`
 - Quality is comparable to CPU at same bitrate
