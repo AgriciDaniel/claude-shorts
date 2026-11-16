@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# printf %.0f must parse "23.4" regardless of the user locale
+export LC_NUMERIC=C
 # Post-render validation for exported shorts
 # Usage: bash scripts/validate.sh --output-dir DIR
 # Output: JSON with pass/fail per file, issues[], and summary
@@ -40,19 +42,19 @@ for file in "$OUTPUT_DIR"/short_*.mp4; do
     basename=$(basename "$file")
 
     # 1. Check file is playable (ffprobe returns valid streams)
-    if ! ffprobe -v quiet -show_entries format=duration -of csv=p=0 "$file" &>/dev/null; then
+    if ! ffprobe -v quiet -show_entries format=duration -of default=nw=1:nk=1 "$file" &>/dev/null; then
         ISSUES+=("File is not playable or corrupt")
     fi
 
     # 2. Check video stream exists and resolution is 1080x1920
-    width=$(ffprobe -v quiet -select_streams v:0 -show_entries stream=width -of csv=p=0 "$file" 2>/dev/null || echo "0")
-    height=$(ffprobe -v quiet -select_streams v:0 -show_entries stream=height -of csv=p=0 "$file" 2>/dev/null || echo "0")
+    width=$(ffprobe -v quiet -select_streams v:0 -show_entries stream=width -of default=nw=1:nk=1 "$file" 2>/dev/null || echo "0")
+    height=$(ffprobe -v quiet -select_streams v:0 -show_entries stream=height -of default=nw=1:nk=1 "$file" 2>/dev/null || echo "0")
     if [ "$width" != "1080" ] || [ "$height" != "1920" ]; then
         ISSUES+=("Resolution is ${width}x${height}, expected 1080x1920")
     fi
 
     # 3. Check audio track exists
-    audio_codec=$(ffprobe -v quiet -select_streams a:0 -show_entries stream=codec_name -of csv=p=0 "$file" 2>/dev/null || echo "")
+    audio_codec=$(ffprobe -v quiet -select_streams a:0 -show_entries stream=codec_name -of default=nw=1:nk=1 "$file" 2>/dev/null || echo "")
     if [ -z "$audio_codec" ]; then
         ISSUES+=("No audio track found")
     fi
@@ -71,7 +73,7 @@ for file in "$OUTPUT_DIR"/short_*.mp4; do
     fi
 
     # 5. Check duration is within shorts range (3-90 seconds)
-    duration=$(ffprobe -v quiet -show_entries format=duration -of csv=p=0 "$file" 2>/dev/null || echo "0")
+    duration=$(ffprobe -v quiet -show_entries format=duration -of default=nw=1:nk=1 "$file" 2>/dev/null || echo "0")
     dur_int=$(printf "%.0f" "$duration" 2>/dev/null || echo "0")
     if [ "$dur_int" -lt 3 ] || [ "$dur_int" -gt 90 ]; then
         ISSUES+=("Duration ${dur_int}s is outside 3-90s range")
@@ -95,7 +97,7 @@ for file in "$OUTPUT_DIR"/short_*.mp4; do
     fi
 
     # 7. Check video codec is H.264
-    video_codec=$(ffprobe -v quiet -select_streams v:0 -show_entries stream=codec_name -of csv=p=0 "$file" 2>/dev/null || echo "")
+    video_codec=$(ffprobe -v quiet -select_streams v:0 -show_entries stream=codec_name -of default=nw=1:nk=1 "$file" 2>/dev/null || echo "")
     if [ "$video_codec" != "h264" ]; then
         ISSUES+=("Video codec is ${video_codec}, expected h264")
     fi
@@ -117,7 +119,7 @@ if [ $TOTAL -eq 0 ]; then
 fi
 
 # Build JSON output
-RESULTS_JSON=$(printf '%s\n' "${RESULTS[@]}" | paste -sd ',' | sed 's/^/[/' | sed 's/$/]/')
+RESULTS_JSON=$(printf '%s\n' "${RESULTS[@]}" | paste -sd ',' - | sed 's/^/[/' | sed 's/$/]/')
 ALL_PASS="false"
 [ $FAILED -eq 0 ] && ALL_PASS="true"
 

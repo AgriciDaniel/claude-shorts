@@ -21,19 +21,13 @@ if [ -d "$HOME/.video-skill" ]; then
         echo "[Python] faster-whisper already installed — skipping Python setup"
     else
         echo "[Python] Installing faster-whisper into shared venv..."
-        "$VENV/bin/pip" install --quiet faster-whisper
-    fi
-
-    # Check mediapipe
-    if ! "$VENV/bin/python3" -c "import mediapipe" 2>/dev/null; then
-        echo "[Python] Installing mediapipe..."
-        "$VENV/bin/pip" install --quiet mediapipe
+        "$VENV/bin/pip" install --quiet faster-whisper "av<19"
     fi
 
     # Check opencv
     if ! "$VENV/bin/python3" -c "import cv2" 2>/dev/null; then
         echo "[Python] Installing opencv-python..."
-        "$VENV/bin/pip" install --quiet opencv-python
+        "$VENV/bin/pip" install --quiet "opencv-python<5"
     fi
 else
     VENV="$HOME/.shorts-skill"
@@ -58,8 +52,8 @@ else
             --index-url https://download.pytorch.org/whl/cpu
     fi
 
-    echo "[Python] Installing faster-whisper, mediapipe, numpy, opencv-python..."
-    "$VENV/bin/pip" install --quiet faster-whisper mediapipe numpy opencv-python
+    echo "[Python] Installing faster-whisper, numpy, opencv-python..."
+    "$VENV/bin/pip" install --quiet faster-whisper "av<19" numpy "opencv-python<5"
 fi
 
 echo "[Python] Venv ready: $VENV"

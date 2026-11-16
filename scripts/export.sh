@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# printf %.0f must parse "23.4" regardless of the user locale
+export LC_NUMERIC=C
 # Platform-specific FFmpeg encoding for exported shorts
 # Usage: bash scripts/export.sh --input-dir DIR --platform PLATFORM --output-dir DIR
 set -euo pipefail
@@ -138,7 +140,7 @@ for input_file in "$INPUT_DIR"/short_*.mp4; do
         if [ -f "$output_file" ] && [ "$FORCE" != "true" ]; then
             size=$(du -k "$output_file" | cut -f1)
             size_mb=$(echo "scale=1; $size / 1024" | bc)
-            duration=$(ffprobe -v quiet -show_entries format=duration -of csv=p=0 "$output_file" 2>/dev/null)
+            duration=$(ffprobe -v quiet -show_entries format=duration -of default=nw=1:nk=1 "$output_file" 2>/dev/null)
             duration_int=$(printf "%.0f" "$duration" 2>/dev/null || echo "0")
             RESULTS+=("{\"file\":\"$output_file\",\"platform\":\"$plat\",\"duration\":\"${duration_int}s\",\"size_mb\":$size_mb,\"skipped\":true}")
             continue
@@ -149,7 +151,7 @@ for input_file in "$INPUT_DIR"/short_*.mp4; do
         # Get file info
         size=$(du -k "$output_file" | cut -f1)
         size_mb=$(echo "scale=1; $size / 1024" | bc)
-        duration=$(ffprobe -v quiet -show_entries format=duration -of csv=p=0 "$output_file" 2>/dev/null)
+        duration=$(ffprobe -v quiet -show_entries format=duration -of default=nw=1:nk=1 "$output_file" 2>/dev/null)
         duration_int=$(printf "%.0f" "$duration" 2>/dev/null || echo "0")
 
         RESULTS+=("{\"file\":\"$output_file\",\"platform\":\"$plat\",\"duration\":\"${duration_int}s\",\"size_mb\":$size_mb}")
@@ -157,7 +159,7 @@ for input_file in "$INPUT_DIR"/short_*.mp4; do
 done
 
 # Build JSON output
-RESULTS_JSON=$(printf '%s\n' "${RESULTS[@]}" | paste -sd ',' | sed 's/^/[/' | sed 's/$/]/')
+RESULTS_JSON=$(printf '%s\n' "${RESULTS[@]}" | paste -sd ',' - | sed 's/^/[/' | sed 's/$/]/')
 
 cat <<EOF
 {

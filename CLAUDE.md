@@ -40,6 +40,6 @@ Pipeline stores intermediate files in `$SHORTS_TMP` (defaults to `/tmp/claude-sh
 ## Dependencies
 
 - FFmpeg (system) — audio extraction, segment cutting, export encoding
-- Python 3.10+ with faster-whisper, mediapipe, numpy, opencv-python
+- Python 3.10+ with faster-whisper, numpy, opencv-python
 - Node.js 18+ with remotion, @remotion/captions, zod
 - NVIDIA GPU recommended (NVENC encoding, CUDA transcription)

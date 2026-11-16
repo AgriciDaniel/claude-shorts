@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Auto-detect video content type: talking-head, screen recording, or podcast.
 
-Samples N frames evenly across the video, runs MediaPipe face detection,
+Samples N frames evenly across the video, runs OpenCV Haar face detection,
 and classifies based on face count, size, and position patterns.
 
 Usage:
@@ -61,16 +61,12 @@ def sample_frames(video_path, num_frames=10):
 
 
 def detect_faces(frame_paths):
-    """Run MediaPipe face detection on frames, return stats."""
-    import mediapipe as mp
+    """Run OpenCV Haar face detection on frames, return stats."""
     import cv2
     import numpy as np
 
-    mp_face = mp.solutions.face_detection
-    detector = mp_face.FaceDetection(
-        model_selection=1,  # Full range model (works for far faces too)
-        min_detection_confidence=0.5
-    )
+    # shortcut: Haar misses profile faces; upgrade to cv2.FaceDetectorYN if classification gets unreliable
+    detector = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
 
     face_counts = []
     face_sizes = []  # as percentage of frame area
@@ -84,23 +80,14 @@ def detect_faces(frame_paths):
         h, w = img.shape[:2]
         frame_area = h * w
 
-        rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        results = detector.process(rgb)
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        faces = detector.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=6,
+                                          minSize=(w // 30, w // 30))
 
-        if results.detections:
-            face_counts.append(len(results.detections))
-            for det in results.detections:
-                bbox = det.location_data.relative_bounding_box
-                face_w = bbox.width * w
-                face_h = bbox.height * h
-                face_area_pct = (face_w * face_h) / frame_area * 100
-                face_sizes.append(face_area_pct)
-                center_x = bbox.xmin + bbox.width / 2
-                face_centers_x.append(center_x)
-        else:
-            face_counts.append(0)
-
-    detector.close()
+        face_counts.append(len(faces))
+        for (fx, fy, fw, fh) in faces:
+            face_sizes.append(fw * fh / frame_area * 100)
+            face_centers_x.append((fx + fw / 2) / w)
 
     avg_count = float(np.mean(face_counts)) if face_counts else 0
     avg_size = float(np.mean(face_sizes)) if face_sizes else 0
