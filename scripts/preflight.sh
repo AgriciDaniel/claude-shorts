@@ -22,7 +22,7 @@ fi
 
 # Check input is a video file (via ffprobe)
 if [ -f "$INPUT" ]; then
-    if ! ffprobe -v quiet -select_streams v:0 -show_entries stream=codec_type -of csv=p=0 "$INPUT" 2>/dev/null | grep -q "video"; then
+    if ! ffprobe -v quiet -select_streams v:0 -show_entries stream=codec_type -of default=nw=1:nk=1 "$INPUT" 2>/dev/null | grep -q "video"; then
         ERRORS+=("Input is not a valid video file: $INPUT")
     fi
 fi
@@ -87,7 +87,7 @@ fi
 DURATION=""
 RESOLUTION=""
 if [ -f "$INPUT" ] && command -v ffprobe &>/dev/null; then
-    DURATION=$(ffprobe -v quiet -show_entries format=duration -of csv=p=0 "$INPUT" 2>/dev/null || echo "")
+    DURATION=$(ffprobe -v quiet -show_entries format=duration -of default=nw=1:nk=1 "$INPUT" 2>/dev/null || echo "")
     RESOLUTION=$(ffprobe -v quiet -select_streams v:0 -show_entries stream=width,height -of csv=p=0 "$INPUT" 2>/dev/null || echo "")
 fi
 

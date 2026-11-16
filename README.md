@@ -69,7 +69,7 @@ bash install.sh
 ### What `setup.sh` does
 
 - Creates a Python virtual environment at `~/.shorts-skill/` (or reuses `~/.video-skill/` if it exists)
-- Installs `faster-whisper`, `mediapipe`, `numpy`, `opencv-python`, and PyTorch (CUDA or CPU variant)
+- Installs `faster-whisper`, `numpy`, `opencv-python`, and PyTorch (CUDA or CPU variant)
 - Runs `npm install` in the `remotion/` directory
 - Checks for system dependencies (FFmpeg, jq)
 
@@ -118,7 +118,7 @@ claude-shorts/
 │
 ├── scripts/
 │   ├── transcribe.py                  # faster-whisper GPU transcription
-│   ├── detect_content.py              # MediaPipe content type classifier
+│   ├── detect_content.py              # OpenCV content type classifier
 │   ├── compute_reframe.py             # Face tracking + cursor tracking + crop
 │   ├── snap_boundaries.py             # Audio-aware boundary snapping
 │   ├── preflight.sh                   # Input validation + disk space check
@@ -174,7 +174,7 @@ claude-shorts/
 
 | Content Type | Reframe Strategy | Zoom |
 |--------------|-----------------|------|
-| **Talking-head** | Face-tracked center crop (MediaPipe) | 9:16 exact |
+| **Talking-head** | Face-tracked center crop (OpenCV) | 9:16 exact |
 | **Screen recording** | Cursor-tracked pan with moderate zoom | 55% of source width |
 | **Podcast** | Dominant speaker tracking | 9:16 exact |
 
@@ -182,9 +182,8 @@ claude-shorts/
 
 ### Python (installed via `setup.sh`)
 - [faster-whisper](https://github.com/SYSTRAN/faster-whisper) - GPU-accelerated Whisper
-- [mediapipe](https://mediapipe.dev/) - Face detection for content classification + reframing
 - [numpy](https://numpy.org/) - Array operations for cursor tracking smoothing
-- [opencv-python](https://opencv.org/) - Frame differencing for cursor detection
+- [opencv-python](https://opencv.org/) - Face detection (Haar cascades) and frame differencing for cursor detection
 
 ### Node.js (installed via `setup.sh`)
 - [Remotion v4](https://remotion.dev/) - React-based video rendering

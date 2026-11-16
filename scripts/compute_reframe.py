@@ -55,15 +55,14 @@ def get_video_info(path):
 
 
 def compute_face_track(clip_path, src_w, src_h, num_samples=5):
-    """Track face positions across sampled frames using MediaPipe."""
+    """Track face positions across sampled frames using OpenCV Haar cascades."""
     import cv2
-    import mediapipe as mp
     import tempfile
 
     _, _, _, duration = get_video_info(clip_path)
 
-    mp_face = mp.solutions.face_detection
-    detector = mp_face.FaceDetection(model_selection=1, min_detection_confidence=0.5)
+    # shortcut: Haar misses profile faces; upgrade to cv2.FaceDetectorYN if crops drift
+    detector = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
 
     face_positions = []
     timestamps = [duration * (i + 0.5) / num_samples for i in range(num_samples)]
@@ -85,16 +84,15 @@ def compute_face_track(clip_path, src_w, src_h, num_samples=5):
         if img is None:
             continue
 
-        rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        results = detector.process(rgb)
+        h, w = img.shape[:2]
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        faces = detector.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=6,
+                                          minSize=(w // 30, w // 30))
 
-        if results.detections:
-            best = max(results.detections,
-                       key=lambda d: d.location_data.relative_bounding_box.width *
-                                     d.location_data.relative_bounding_box.height)
-            bbox = best.location_data.relative_bounding_box
-            cx = bbox.xmin + bbox.width / 2
-            cy = bbox.ymin + bbox.height / 2
+        if len(faces):
+            fx, fy, fw, fh = max(faces, key=lambda f: f[2] * f[3])
+            cx = (fx + fw / 2) / w
+            cy = (fy + fh / 2) / h
             face_positions.append({
                 "t": round(ts, 2),
                 "x_center": round(cx, 4),
@@ -102,8 +100,6 @@ def compute_face_track(clip_path, src_w, src_h, num_samples=5):
             })
 
         os.unlink(frame_path)
-
-    detector.close()
 
     import shutil
     shutil.rmtree(tmpdir, ignore_errors=True)
