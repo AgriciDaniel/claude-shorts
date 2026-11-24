@@ -27,7 +27,7 @@ if [ -d "$HOME/.video-skill" ]; then
     # Check mediapipe
     if ! "$VENV/bin/python3" -c "import mediapipe" 2>/dev/null; then
         echo "[Python] Installing mediapipe..."
-        "$VENV/bin/pip" install --quiet mediapipe
+        "$VENV/bin/pip" install --quiet "mediapipe>=0.10.35"
     fi
 
     # Check opencv
@@ -59,7 +59,7 @@ else
     fi
 
     echo "[Python] Installing faster-whisper, mediapipe, numpy, opencv-python..."
-    "$VENV/bin/pip" install --quiet faster-whisper mediapipe numpy opencv-python
+    "$VENV/bin/pip" install --quiet faster-whisper "mediapipe>=0.10.35" numpy opencv-python
 fi
 
 echo "[Python] Venv ready: $VENV"
