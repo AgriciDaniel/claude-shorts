@@ -90,7 +90,9 @@ Report to user: transcription time, word count, language detected.
 
 Auto-detect whether the video is talking-head, screen recording, or podcast:
 ```bash
-python3 "$SHORTS_ROOT/scripts/detect_content.py" INPUT_FILE \
+VENV="$HOME/.video-skill"
+[ -d "$VENV" ] || VENV="$HOME/.shorts-skill"
+"$VENV/bin/python3" "$SHORTS_ROOT/scripts/detect_content.py" INPUT_FILE \
     --output $SHORTS_TMP/content_type.json
 ```
 
@@ -223,7 +225,9 @@ ffmpeg -y -ss START -to END -i INPUT_FILE -c copy \
 
 Compute reframe coordinates for each clip:
 ```bash
-python3 "$SHORTS_ROOT/scripts/compute_reframe.py" \
+VENV="$HOME/.video-skill"
+[ -d "$VENV" ] || VENV="$HOME/.shorts-skill"
+"$VENV/bin/python3" "$SHORTS_ROOT/scripts/compute_reframe.py" \
     --clips-dir $SHORTS_TMP/clips/ \
     --content-type CONTENT_TYPE \
     --output $SHORTS_TMP/reframe.json

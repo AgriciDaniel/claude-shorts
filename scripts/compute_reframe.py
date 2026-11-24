@@ -57,13 +57,12 @@ def get_video_info(path):
 def compute_face_track(clip_path, src_w, src_h, num_samples=5):
     """Track face positions across sampled frames using MediaPipe."""
     import cv2
-    import mediapipe as mp
     import tempfile
+    from face_detector import create_detector, find_faces
 
     _, _, _, duration = get_video_info(clip_path)
 
-    mp_face = mp.solutions.face_detection
-    detector = mp_face.FaceDetection(model_selection=1, min_detection_confidence=0.5)
+    detector = create_detector()
 
     face_positions = []
     timestamps = [duration * (i + 0.5) / num_samples for i in range(num_samples)]
@@ -85,14 +84,10 @@ def compute_face_track(clip_path, src_w, src_h, num_samples=5):
         if img is None:
             continue
 
-        rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        results = detector.process(rgb)
+        boxes = find_faces(detector, img)
 
-        if results.detections:
-            best = max(results.detections,
-                       key=lambda d: d.location_data.relative_bounding_box.width *
-                                     d.location_data.relative_bounding_box.height)
-            bbox = best.location_data.relative_bounding_box
+        if boxes:
+            bbox = max(boxes, key=lambda b: b.width * b.height)
             cx = bbox.xmin + bbox.width / 2
             cy = bbox.ymin + bbox.height / 2
             face_positions.append({

@@ -62,15 +62,11 @@ def sample_frames(video_path, num_frames=10):
 
 def detect_faces(frame_paths):
     """Run MediaPipe face detection on frames, return stats."""
-    import mediapipe as mp
     import cv2
     import numpy as np
+    from face_detector import create_detector, find_faces
 
-    mp_face = mp.solutions.face_detection
-    detector = mp_face.FaceDetection(
-        model_selection=1,  # Full range model (works for far faces too)
-        min_detection_confidence=0.5
-    )
+    detector = create_detector()
 
     face_counts = []
     face_sizes = []  # as percentage of frame area
@@ -84,13 +80,11 @@ def detect_faces(frame_paths):
         h, w = img.shape[:2]
         frame_area = h * w
 
-        rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        results = detector.process(rgb)
+        boxes = find_faces(detector, img)
 
-        if results.detections:
-            face_counts.append(len(results.detections))
-            for det in results.detections:
-                bbox = det.location_data.relative_bounding_box
+        if boxes:
+            face_counts.append(len(boxes))
+            for bbox in boxes:
                 face_w = bbox.width * w
                 face_h = bbox.height * h
                 face_area_pct = (face_w * face_h) / frame_area * 100
